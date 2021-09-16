@@ -1,7 +1,6 @@
 import socket
 import csv
-import _pickle as cPickle
-
+import numpy as np
 
 # Declaración de matriz que contiene todas las iteraciones
 h = []
@@ -40,12 +39,13 @@ print('connecting to {} port {}'.format(*server_address))
 sock.connect(server_address)
 
 try:
-
     # Send data
-    send_message = cPickle.dumps(h, protocol=-1)
+    # send_message = json.dumps(h, cls=ComplexEncoder)
     print('sending')
-
-    sock.sendall(send_message)
+    h2 = np.array(h)
+    print('data type', h2.dtype.name)
+    print('shape', h2.shape)
+    sock.sendall(h2.tobytes())
 finally:
     print('closing socket')
     sock.close()
