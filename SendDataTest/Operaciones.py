@@ -14,14 +14,20 @@ def genradorDeMatriz(n, l):
 # Devuelve el promedio de las magnitudes los elementos de una lista de matrices
 def Promedio(h):
     hPromedio = numpy.zeros_like(h[0], dtype=float, order='K')
+    # for i in range(len(h)):
+    #     for j in range(len(h[i])):
+    #         for k in range(len(h[i][j])):
+    #             # hPromedio[j][k] += (h[i][j][k].conjugate()*h[i][j][k]).real
+    #             hPromedio[j][k] += abs(h[i][j][k])*abs(h[i][j][k])
+    
     for i in range(len(h)):
-        for j in range(len(h[i])):
-            for k in range(len(h[i][j])):
-                # hPromedio[j][k] += (h[i][j][k].conjugate()*h[i][j][k]).real
-                hPromedio[j][k] += abs(h[i][j][k])*abs(h[i][j][k])
-    for i in range(len(hPromedio)):
-        for j in range(len(hPromedio[i])):
-            hPromedio[i][j]/=len(h)
+        tempAbs = numpy.abs(h[i])
+        tempAbs = tempAbs*tempAbs
+        hPromedio += tempAbs
+    # for i in range(len(hPromedio)):
+    #     for j in range(len(hPromedio[i])):
+    #         hPromedio[i][j]/=len(h)
+    hPromedio = hPromedio/len(h)
     return hPromedio
 # Perfil de potecina de retardo    
 def PPR(h):
@@ -52,17 +58,25 @@ def Mostrar(texto, matriz, dimensions):
 # Funcion de dispercion
 def FDD(h):
     Ret = numpy.zeros_like(h[0], dtype=object, order='K')
-    for i in range(len(h)):
-        for l in range(len(h[0][0])):
-            temp = []
-            for n in range(len(h[0])):
-                temp.append(h[i][n][l])
-            temp = numpy.fft.fft(temp)
-            for n in range(len(h[0])):
-                Ret[n][l] += abs(temp[n])*abs(temp[n])
-    for i in range(len(Ret)):
-        for j in range(len(Ret[0])):
-            Ret[i][j] = Ret[i][j]/len(h)
+    # for i in range(len(h)):
+    #     for l in range(len(h[0][0])):
+    #         temp = []
+    #         for n in range(len(h[0])):
+    #             temp.append(h[i][n][l])
+    #         temp = numpy.fft.fft(temp)
+    #         for n in range(len(h[0])):
+    #             Ret[n][l] += abs(temp[n])*abs(temp[n])
+    h2 = numpy.zeros( (100, 11, 1024), dtype=numpy.complex128)
+    Ret2 = numpy.zeros_like(h2[0], dtype=object, order='K')
+    for i in range(len(h2)):
+        h2[i] = h[i].T
+        for j in range(len(h2[i])):
+            h2[i][j] = numpy.fft.fft(h2[i][j])
+        tempAbs = numpy.abs(h2[i])
+        tempAbs = tempAbs*tempAbs
+        Ret2 += tempAbs
+    Ret = Ret2.transpose()
+    Ret = Ret/len(h)
     return Ret
 # Densidad espectral de potencia
 def DEDP(h): # h debe ser funcion de dispercion
