@@ -66,7 +66,7 @@ def FDD(h):
     #         temp = numpy.fft.fft(temp)
     #         for n in range(len(h[0])):
     #             Ret[n][l] += abs(temp[n])*abs(temp[n])
-    h2 = numpy.zeros( (100, 11, 1024), dtype=numpy.complex128)
+    h2 = numpy.zeros( (len(h), len(h[0][0]), len(h[0])), dtype=numpy.complex128)
     Ret2 = numpy.zeros_like(h2[0], dtype=object, order='K')
     for i in range(len(h2)):
         h2[i] = h[i].T
