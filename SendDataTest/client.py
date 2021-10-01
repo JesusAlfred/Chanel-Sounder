@@ -43,9 +43,15 @@ try:
     # send_message = json.dumps(h, cls=ComplexEncoder)
     print('sending')
     h2 = np.array(h)
-    print('data type', h2.dtype.name)
-    print('shape', h2.shape)
-    sock.sendall(h2.tobytes())
+    #print('data type', type(h2))
+    #print('shape', h2.shape)
+    header = f"np.{h2.dtype.name};{h2.shape}"
+    header = f"{header:<{32}}"
+    print(header)
+    msg = bytes(header, "utf-8") + h2.tobytes() + bytes("end","utf-8")
+    print(msg[-3:])
+
+    sock.sendall(msg)
 finally:
     print('closing socket')
     sock.close()

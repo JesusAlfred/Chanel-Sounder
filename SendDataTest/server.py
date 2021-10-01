@@ -3,6 +3,7 @@ import time
 import numpy as np
 import main
 
+operationController = main.Main()
 # Create a TCP/IP socket
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -28,13 +29,18 @@ while True:
             if receive_message:
                 fullmessage += receive_message
             else:
-                break
-    finally:
-        message = np.frombuffer(fullmessage, dtype=np.complex128).reshape((100, 1024, 11))
+                if(fullmessage[-3:] == b'end'):
+                    fullmessage = fullmessage[:-3]
+                    break
+                else:
+                    fullmessage = bytearray(0)
+                    raise Exception
+    except:
+        print("error: conection lost")
+    else:
+        header = fullmessage[:32].decode("utf-8").split(';')
+        message = np.frombuffer(fullmessage[32:], dtype=eval(header[0])).reshape(eval(header[1]))
         print('time to get the data: ', time.time() - start)
-        print(len(message))
-        print(len(message[0]))
-        print(len(message[0][0]))
-        main.makeOp(message)
+        operationController.makeOp(message)
         # Clean up the connection
         connection.close()
