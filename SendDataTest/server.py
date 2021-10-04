@@ -37,6 +37,8 @@ while True:
                     raise Exception
     except:
         print("error: conection lost")
+        connection.close()
+        break
     else:
         header = fullmessage[:32].decode("utf-8").split(';')
         message = np.frombuffer(fullmessage[32:], dtype=eval(header[0])).reshape(eval(header[1]))
@@ -44,3 +46,4 @@ while True:
         operationController.makeOp(message)
         # Clean up the connection
         connection.close()
+operationController.close()

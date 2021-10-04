@@ -40,17 +40,13 @@ sock.connect(server_address)
 
 try:
     # Send data
-    # send_message = json.dumps(h, cls=ComplexEncoder)
-    print('sending')
-    h2 = np.array(h)
-    #print('data type', type(h2))
-    #print('shape', h2.shape)
+    # Send data
+    h2 = np.array(h, dtype=np.complex64)
     header = f"np.{h2.dtype.name};{h2.shape}"
     header = f"{header:<{32}}"
     print(header)
     msg = bytes(header, "utf-8") + h2.tobytes() + bytes("end","utf-8")
-    print(msg[-3:])
-
+    print(f'sending {len(msg)} bytes')
     sock.sendall(msg)
 finally:
     print('closing socket')

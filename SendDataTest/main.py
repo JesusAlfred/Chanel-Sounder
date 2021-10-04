@@ -1,13 +1,18 @@
 import matplotlib.pyplot as plt
+import csv
 import Operaciones as Op
 import numpy as np
 import time
 import os
+from datetime import datetime
 
 class Main:
 
     def __init__(self):
         self.count = 0
+        self.date = datetime.today().strftime('%Y-%m-%d %H.%M')
+        self.dir = "./Saves/" + self.date + "/"
+        print(self.date)
 
     def makeOp(self, h):
         # Perfil de potencia de retardo
@@ -38,7 +43,7 @@ class Main:
 
         # Guardar los datos
         start = time.time()
-        dir = "./Saves/" + str(self.count)
+        dir = self.dir + str(self.count)
         if not os.path.exists(dir):
             os.makedirs(dir)
         np.savetxt(dir + "/perfilDePotenciaDeRetardo.csv", [PDDR], fmt='% s', delimiter=',', newline='\n')
@@ -46,9 +51,57 @@ class Main:
         np.savetxt(dir + "/correlacionDeFrecuencia.csv", [FDA], fmt='% s', delimiter=',', newline='\n')
         np.savetxt(dir + "/densidadEspectralDePotencia.csv", [DEDP], fmt='% s', delimiter=',', newline='\n')
         np.savetxt(dir + "/correlacionTemporal.csv", [FDCT], fmt='% s', delimiter=',', newline='\n')
-        print('time for saving the data in csv: ', time.time() - start)
         self.count += 1
-    '''
+        print('time for saving the data in csv: ', time.time() - start)
+        #self.showGraphs(PDDR, FDA, FDD, DEDP, FDCT)
+
+    def close(self):
+        print("Closing the sesion")
+        print("Making the average graphs")
+        
+        for index in range (self.count):
+            dir = self.dir + str(index)
+            with open(dir + "/perfilDePotenciaDeRetardo.csv") as csv_file:
+                csv_reader = csv.reader(csv_file, delimiter=',')
+                PDDR = []
+                for x in csv_reader:
+                    PDDR.append(x)
+                PDDR = np.array(PDDR).astype(float)
+
+            with open(dir + "/correlacionDeFrecuencia.csv") as csv_file:
+                csv_reader = csv.reader(csv_file, delimiter=',')
+                CDF = []
+                for x in csv_reader:
+                    CDF.append(x)
+                CDF = np.array(CDF).astype(float)
+            with open(dir + "/densidadEspectralDePotencia.csv") as csv_file:
+                csv_reader = csv.reader(csv_file, delimiter=',')
+                DEDP = []
+                for x in csv_reader:
+                    DEDP.append(x)
+                DEDP = np.array(DEDP).astype(float)
+            with open(dir + "/correlacionTemporal.csv") as csv_file:
+                csv_reader = csv.reader(csv_file, delimiter=',')
+                CT = []
+                for x in csv_reader:
+                    CT.append(x)
+                CT = np.array(CT).astype(float)
+        
+        PDDR = np.mean(PDDR, axis=0)
+        CDF = np.mean(CDF, axis=0)
+        DEDP = np.mean(DEDP, axis=0)
+        CT = np.mean(CT, axis=0)
+        if not os.path.exists(self.dir+"average"):
+            os.makedirs(self.dir+"average")
+        np.savetxt(self.dir + "average/perfilDePotenciaDeRetardo.csv", [PDDR], fmt='% s', delimiter=',', newline='\n')
+        np.savetxt(self.dir + "average/correlacionDeFrecuencia.csv", [CDF], fmt='% s', delimiter=',', newline='\n')
+        np.savetxt(self.dir + "average/densidadEspectralDePotencia.csv", [DEDP], fmt='% s', delimiter=',', newline='\n')
+        np.savetxt(self.dir + "average/correlacionTemporal.csv", [CT], fmt='% s', delimiter=',', newline='\n')
+        print("finished")
+        self.showGraphs(PDDR, CDF, DEDP, CT)
+    
+    
+    def showGraphs(self, PDDR, FDA, DEDP, FDCT):
         #Mostrar gráficas
         # Perfil de potencia de retardo
         plt.plot((PDDR))
@@ -62,22 +115,22 @@ class Main:
 
         # Funcion de dispersion
         #Op.Mostrar("Funcion de dispersion", FDD, 2)
-        fig = plt.figure()
-        ax3d = plt.axes(projection="3d")
+        # fig = plt.figure()
+        # ax3d = plt.axes(projection="3d")
 
-        xdata = np.linspace(0,10,11)
-        ydata = np.linspace(0,1023,1024)
-        ydata = np.fft.fftshift(ydata)
-        X,Y = np.meshgrid(xdata,ydata)
+        # xdata = np.linspace(0,10,11)
+        # ydata = np.linspace(0,1023,1024)
+        # ydata = np.fft.fftshift(ydata)
+        # X,Y = np.meshgrid(xdata,ydata)
 
-        ax3d = plt.axes(projection='3d')
-        ax3d.plot_surface(X, Y, FDD, cmap='plasma')
-        ax3d.set_title('Funcion de dispersion')
-        ax3d.set_xlabel('X')
-        ax3d.set_ylabel('Y')
-        ax3d.set_zlabel('Z')
+        # ax3d = plt.axes(projection='3d')
+        # ax3d.plot_surface(X, Y, FDD, cmap='plasma')
+        # ax3d.set_title('Funcion de dispersion')
+        # ax3d.set_xlabel('X')
+        # ax3d.set_ylabel('Y')
+        # ax3d.set_zlabel('Z')
         
-        plt.show() 
+        # plt.show() 
 
         # Densidad espectral de potencia
         plt.plot(np.fft.fftshift(DEDP))
@@ -89,4 +142,3 @@ class Main:
 
         plt.ylabel('Funcion de correlacion temporal')
         plt.show()
-    '''
