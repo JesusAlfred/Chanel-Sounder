@@ -17,30 +17,32 @@ from tqdm import tqdm
 #Dosificar Realizaciones
 # Create a TCP/IP socket
 server_address = ('localhost', 10000)
-
+print("reading data...")
+pool = []
+ChannelRealizationFileName = "./ChannelRealizations/realizationArray"
+for n in tqdm(range(100)):
+    fileRoute = ChannelRealizationFileName + str(n+1) + ".csv"
+    with open(fileRoute) as csv_file:
+        csv_reader = csv.reader(csv_file, delimiter=',')
+        temph = []
+        for row in csv_reader:
+            temprow = []
+            for column in row:
+                column = column.replace(" ","")
+                column = column.replace("i","j")
+                column = column.split("+")
+                if column[1][0] == '-':
+                    column = column[0] + column[1]
+                else:
+                    column = column[0] + "+" + column[1]
+                temprow.append(complex(column))
+            temph.append(temprow)
+        pool.append(temph)
 while(True):
-    print("reading data...")
     h = []
-    ChannelRealizationFileName = "./ChannelRealizations/realizationArray"
     for n in tqdm(range(500)):
-        rand_Index = rd.randrange(1,100)
-        fileRoute = ChannelRealizationFileName + str(rand_Index) + ".csv"
-        with open(fileRoute) as csv_file:
-            csv_reader = csv.reader(csv_file, delimiter=',')
-            temph = []
-            for row in csv_reader:
-                temprow = []
-                for column in row:
-                    column = column.replace(" ","")
-                    column = column.replace("i","j")
-                    column = column.split("+")
-                    if column[1][0] == '-':
-                        column = column[0] + column[1]
-                    else:
-                        column = column[0] + "+" + column[1]
-                    temprow.append(complex(column))
-                temph.append(temprow)
-            h.append(temph)
+        rand_Index = rd.randrange(0,100)
+        h.append(pool[rand_Index])
     #Espera en tiempo real 
     snooze = rd.randrange(0,2)
     print(f"waiting...{snooze} seconds")

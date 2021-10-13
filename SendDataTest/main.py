@@ -98,7 +98,7 @@ class Main:
         np.savetxt(self.dir + "average/densidadEspectralDePotencia.csv", [DEDP], fmt='% s', delimiter=',', newline='\n')
         np.savetxt(self.dir + "average/correlacionTemporal.csv", [CT], fmt='% s', delimiter=',', newline='\n')
         print("finished")
-        self.showGraphs(PDDR, CDF, DEDP, CT)
+        # self.showGraphs(PDDR, CDF, DEDP, CT)
     
     
     def showGraphs(self, PDDR, FDA, DEDP, FDCT):
