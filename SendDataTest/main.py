@@ -44,8 +44,14 @@ class Main:
         # Guardar los datos
         start = time.time()
         dir = self.dir + str(self.count)
+
+        header_info = self.date + "\nCoord: 41°24’12.2N   2°10’26.5E"
+
         if not os.path.exists(dir):
             os.makedirs(dir)
+        text_file = open(dir + "/header.h", "w")
+        text_file.write(header_info)
+        text_file.close()
         np.savetxt(dir + "/perfilDePotenciaDeRetardo.csv", [PDDR], fmt='% s', delimiter=',', newline='\n')
         np.savetxt(dir + "/funcionDeDispersion.csv", FDD, fmt='% s', delimiter=',', newline='\n')
         np.savetxt(dir + "/correlacionDeFrecuencia.csv", [FDA], fmt='% s', delimiter=',', newline='\n')
